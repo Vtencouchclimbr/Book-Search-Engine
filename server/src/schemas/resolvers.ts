@@ -1,4 +1,4 @@
-import User from '../models/index.js';
+import { User } from '../models/index';
 import { signToken, AuthenticationError } from '../utils/auth.js'; 
 
 // Define types for the arguments
@@ -25,8 +25,12 @@ interface BookArgs {
 
 interface AddBookArgs {
   input:{
-    bookText: string;
-    bookAuthor: string;
+    authors: string[];
+    description: string;
+    title: string;
+    bookId: string;
+    image: string;
+    link: string;
   }
 }
 
@@ -83,35 +87,31 @@ const resolvers = {
     },
     saveBook: async (_parent: any, { input }: AddBookArgs, context: any) => {
       if (context.user) {
-        const book = await Book.create({ ...input });
-
-        await User.findOneAndUpdate(
+        return User.findOneAndUpdate(
           { _id: context.user._id },
-          { $addToSet: { book: book._id } }
+          {
+            $addToSet: {
+              savedBooks: { ...input },
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
         );
-
-        return book;
       }
       throw AuthenticationError;
       ('You need to be logged in!');
     },
     deleteBook: async (_parent: any, { bookId }: BookArgs, context: any) => {
       if (context.user) {
-        const book = await Book.findOneAndDelete({
-          _id: bookId,
-          bookAuthor: context.user.username,
-        });
-
-        if(!book){
-          throw AuthenticationError;
-        }
-
-        await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $pull: { books: book._id } }
+          { $pull: { books: bookId } },
+          { new: true }
         );
-
-        return book;
+    
+        return updatedUser;
       }
       throw AuthenticationError;
     },
