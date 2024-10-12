@@ -9,19 +9,28 @@ import { removeBookId } from '../utils/localStorage';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
+import { User } from '../models/User';
 
+interface UserData {
+  me: User;
+}
 
+interface RemoveBookData {
+  removeBook: {
+    bookId: string;
+  };
+}
 
 const SavedBooks = () => {
   // useQuery hook to execute the GET_ME query
-  const { loading, error, data } = useQuery(GET_ME);
+  const { loading, error, data } = useQuery<UserData>(GET_ME);
 
   // useMutation hook for REMOVE_BOOK
-  const [removeBook] = useMutation(REMOVE_BOOK, {
+  const [removeBook] = useMutation<RemoveBookData>(REMOVE_BOOK, {
     update(cache, { data: { removeBook } }) {
       try {
         // Read the existing data from the cache
-        const { me } = cache.readQuery({ query: GET_ME });
+        const { me } = cache.readQuery<UserData>({ query: GET_ME });
 
         // Write the new data to the cache by filtering out the deleted book
         cache.writeQuery({
