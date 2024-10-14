@@ -37,14 +37,14 @@ interface AddBookArgs {
 const resolvers = {
   Query: {
     user: async (_parent: any, { username }: UserArgs) => {
-      return User.findOne({ username }).populate('books');
+      return User.findOne({ username }).populate('savedBooks');
     },
     // Query to get the authenticated user's information
     // The 'me' query relies on the context to check if the user is authenticated
     me: async (_parent: any, _args: any, context: any) => {
       // If the user is authenticated, find and return the user's information along with their books
       if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate('books');
+        return User.findOne({ _id: context.user._id }).populate('savedBooks');
       }
       // If the user is not authenticated, throw an AuthenticationError
       throw new AuthenticationError('Could not authenticate user.');
@@ -103,7 +103,7 @@ const resolvers = {
       throw AuthenticationError;
       ('You need to be logged in!');
     },
-    deleteBook: async (_parent: any, { bookId }: BookArgs, context: any) => {
+    removeBook: async (_parent: any, { bookId }: BookArgs, context: any) => {
       if (context.user) {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
