@@ -17,7 +17,13 @@ interface UserData {
 
 interface RemoveBookData {
   removeBook: {
+    _id: string;
+    title: string;
+    authors: string[];
+    description: string;
     bookId: string;
+    image: string;
+    link: string;
   };
 }
 
