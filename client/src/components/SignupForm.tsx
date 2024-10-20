@@ -4,14 +4,14 @@ import { Form, Button, Alert } from 'react-bootstrap';
 
 // import { createUser } from '../utils/API';
 import Auth from '../utils/auth';
-import type { User } from '../models/User';
+import type { UserInput } from '../models/User';
 import { useMutation } from '@apollo/client';
 import { ADD_USER } from '../utils/mutations';
 
 // biome-ignore lint/correctness/noEmptyPattern: <explanation>
 const SignupForm = ({}: { handleModalClose: () => void }) => {
   // set initial form state
-  const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
+  const [userFormData, setUserFormData] = useState<UserInput>({ username: '', email: '', password: '' });
   // set state for form validation
   const [validated] = useState(false);
   // set state for alert
@@ -27,7 +27,7 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
 
   const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    console.log(userFormData);
     // check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -37,7 +37,7 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
 
     try {
       const { data } = await addUser({
-        variables: { ...userFormData },
+        variables: userFormData ,
       });
 
       const { token } = data.addUser;
@@ -51,7 +51,6 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
       username: '',
       email: '',
       password: '',
-      savedBooks: [],
     });
   };
 

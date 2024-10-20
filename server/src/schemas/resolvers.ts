@@ -1,13 +1,11 @@
-import { User } from '../models/index';
-import { signToken, AuthenticationError } from '../utils/auth'; 
+import User from '../models/User.js';
+import { signToken, AuthenticationError } from '../utils/auth.js'; 
 
 // Define types for the arguments
 interface AddUserArgs {
-  input:{
     username: string;
     email: string;
     password: string;
-  }
 }
 
 interface LoginUserArgs {
@@ -25,10 +23,10 @@ interface BookArgs {
 
 interface AddBookArgs {
   input:{
-    authors: string[];
-    description: string;
-    title: string;
     bookId: string;
+    authors: string[];
+    title: string;
+    description: string;
     image: string;
     link: string;
   }
@@ -43,17 +41,17 @@ const resolvers = {
     // The 'me' query relies on the context to check if the user is authenticated
     me: async (_parent: any, _args: any, context: any) => {
       // If the user is authenticated, find and return the user's information along with their books
-      if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate('savedBooks');
+      if (context.me) {
+        return User.findOne({ _id: context.me._id }).populate('savedBooks');
       }
       // If the user is not authenticated, throw an AuthenticationError
       throw new AuthenticationError('Could not authenticate user.');
     },
   },
   Mutation: {
-    createUser: async (_parent: any, { input }: AddUserArgs) => {
+    addUser: async (_parent: any, { username, email, password }: AddUserArgs) => {
       // Create a new user with the provided username, email, and password
-      const user = await User.create({ ...input });
+      const user = await User.create({ username, email, password });
     
       // Sign a token with the user's information
       const token = signToken(user.username, user.email, user._id);
