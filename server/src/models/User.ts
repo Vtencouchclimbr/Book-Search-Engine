@@ -5,8 +5,10 @@ import bcrypt from 'bcrypt';
 import bookSchema from './Book.js';
 import type { BookDocument } from './Book.js';
 
+import type { ObjectId } from 'mongodb';
+
 export interface UserDocument extends Document {
-  id: string;
+  _id: ObjectId;
   username: string;
   email: string;
   password: string;
@@ -51,6 +53,11 @@ userSchema.pre('save', async function (next) {
   }
 
   next();
+});
+
+// create a virtual called `id` that's value is the string version of the user's _id field
+userSchema.virtual('id').get(function () {
+  return this._id.toHexString();
 });
 
 // custom method to compare and validate password for logging in

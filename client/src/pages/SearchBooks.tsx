@@ -74,7 +74,7 @@ const SearchBooks = () => {
 
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
-
+    console.log(token);
     if (!token) {
       console.error('No token found, please log in to save books.');
       return false;
@@ -82,7 +82,7 @@ const SearchBooks = () => {
 
     try {
       const response = await saveBook({
-        variables: { book: bookToSave },
+        variables: { input: bookToSave },
         context: {
           headers: {
             authorization: `Bearer ${token}`,

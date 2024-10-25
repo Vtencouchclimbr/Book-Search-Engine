@@ -14,9 +14,11 @@ const typeDefs = `
     description: String
     image: String
     link: String
+    createdAt: String
   }
 
   input UserInput {
+    _id: ID
     username: String!
     email: String!
     password: String!
@@ -42,10 +44,10 @@ const typeDefs = `
   }
 
   type Mutation {
-    addUser(username: String ,email: String, password:String): Auth
+    addUser(input: UserInput!): Auth
     login(email: String!, password: String!): Auth
-    saveBook(input: BookInput!): User!
-    removeBook(bookId: ID!): User!
+    saveBook(input: BookInput!): Book!
+    removeBook(bookId: String): User!
   }
 `;
 

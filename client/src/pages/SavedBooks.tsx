@@ -4,27 +4,19 @@ import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 // import { deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
-// import type { User } from '../models/User';
 
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 import { User } from '../models/User';
+import { Book } from '../models/Book';
 
 interface UserData {
-  me: User;
+  me : User;
 }
 
 interface RemoveBookData {
-  removeBook: {
-    _id: string;
-    title: string;
-    authors: string[];
-    description: string;
-    bookId: string;
-    image: string;
-    link: string;
-  };
+  removeBook: Book;
 }
 
 const SavedBooks = () => {
@@ -38,16 +30,20 @@ const SavedBooks = () => {
         // Read the existing data from the cache
         const { me } = cache.readQuery<UserData>({ query: GET_ME });
 
+        if (me) {
         // Write the new data to the cache by filtering out the deleted book
         cache.writeQuery({
           query: GET_ME,
           data: {
             me: {
               ...me,
-              savedBooks: me.savedBooks.filter((book) => book.bookId !== removeBook.bookId),
+              savedBooks: me.savedBooks.filter((book: Book) => book.bookId !== removeBook.bookId),
             },
           },
         });
+      } else {
+        console.error('No me found in cache');
+      }
       } catch (e) {
         console.error(e);
       }
