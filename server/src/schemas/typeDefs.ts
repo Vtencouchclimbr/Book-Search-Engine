@@ -25,6 +25,7 @@ const typeDefs = `
   }
 
   input BookInput {
+    _id: ID
     bookId: String!
     authors: [String!]!
     title: String!
